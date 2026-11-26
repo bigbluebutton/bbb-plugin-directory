@@ -1,0 +1,44 @@
+# Verification build of a deploy request. Runs on pull_request, so on PRs from
+# forks it gets a read-only token and no secrets; the plugin code only runs in
+# a throwaway container. Bot 2 merges only after the `verify-build` check of
+# the PR head passed.
+name: Verify build
+on:
+  pull_request:
+    paths:
+      - 'plugins/*/release.json'
+permissions:
+  contents: read
+jobs:
+  verify-build:
+    name: verify-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci --ignore-scripts
+      - name: Find the plugin of the PR
+        id: plugin
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed=$(git diff --name-only "$BASE_SHA"...HEAD -- 'plugins/*/release.json')
+          count=$(printf '%s\n' "$changed" | grep -c . || true)
+          if [ "$count" -ne 1 ]; then
+            echo "::error::A deploy PR changes the release.json of exactly one plugin (found $count)"
+            exit 1
+          fi
+          echo "id=$(echo "$changed" | cut -d/ -f2)" >> "$GITHUB_OUTPUT"
+      - name: Build at the commit, without credentials
+        run: node src/cli/build-plugin.mjs --plugin "${{ steps.plugin.outputs.id }}" --out out/publication --work work
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: verify-build-${{ steps.plugin.outputs.id }}
+          path: out/publication
+          retention-days: 7

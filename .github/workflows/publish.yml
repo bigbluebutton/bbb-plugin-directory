@@ -1,0 +1,144 @@
+# Deploy on merge: build the requested version at its exact commit in a job
+# without credentials, publish it from a separate job that only receives the
+# built files, check it over HTTPS, then regenerate catalog.json and the
+# showcase. Also regenerates the catalog when other directory data changes,
+# on a daily schedule (self-healing) and by hand.
+name: Publish
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/**'
+      - 'data/**'
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  detect:
+    runs-on: ubuntu-24.04
+    outputs:
+      plugins: ${{ steps.changed.outputs.plugins }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Plugins whose release.json changed
+        id: changed
+        env:
+          BEFORE: ${{ github.event.before }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" != push ] || [ -z "$BEFORE" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ]; then
+            echo 'plugins=[]' >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          plugins=$(git diff --name-only --diff-filter=AM "$BEFORE" HEAD -- 'plugins/*/release.json' \
+            | cut -d/ -f2 | sort -u | jq -R . | jq -cs 'map(select(length > 0))')
+          echo "plugins=$plugins" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: detect
+    if: needs.detect.outputs.plugins != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: ${{ fromJSON(needs.detect.outputs.plugins) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    # No secrets in this job: it runs the plugin's build.
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci --ignore-scripts
+      - run: node src/cli/build-plugin.mjs --plugin "${{ matrix.plugin }}" --out out/publication --work work
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: publication-${{ matrix.plugin }}
+          path: out/publication
+          retention-days: 90
+
+  publish:
+    needs: [detect, build]
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: ${{ fromJSON(needs.detect.outputs.plugins) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: publish
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: publication-${{ matrix.plugin }}
+          path: out/publication
+      - name: Publish, move stable URLs and check over HTTPS
+        run: node src/cli/publish.mjs --dir out/publication --report out/report.json
+        env:
+          S3_ENDPOINT: ${{ vars.S3_ENDPOINT }}
+          S3_REGION: ${{ vars.S3_REGION }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_PREFIX: ${{ vars.S3_PREFIX }}
+          S3_FORCE_PATH_STYLE: ${{ vars.S3_FORCE_PATH_STYLE }}
+          S3_OBJECT_ACL: ${{ vars.S3_OBJECT_ACL }}
+          PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL }}
+          S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+
+  catalog:
+    needs: [detect, publish]
+    # Runs after a deploy, and also when nothing was deployed (data changes, schedule).
+    if: ${{ !cancelled() && needs.detect.result == 'success' && needs.publish.result != 'failure' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: publish
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci --ignore-scripts
+      - run: node src/cli/generate-catalog.mjs --out out/catalog.json
+        env:
+          S3_ENDPOINT: ${{ vars.S3_ENDPOINT }}
+          S3_REGION: ${{ vars.S3_REGION }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_PREFIX: ${{ vars.S3_PREFIX }}
+          S3_FORCE_PATH_STYLE: ${{ vars.S3_FORCE_PATH_STYLE }}
+          S3_OBJECT_ACL: ${{ vars.S3_OBJECT_ACL }}
+          PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL }}
+          S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+      - run: node src/cli/build-showcase.mjs --catalog out/catalog.json --out out/site
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: out/site
+
+  pages:
+    needs: catalog
+    if: ${{ !cancelled() && needs.catalog.result == 'success' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

@@ -1,0 +1,8 @@
+# With the branch ruleset of main set to "Require review from Code Owners" and
+# zero required approvals, every change needs a review by the directory
+# maintainers except a plugin's release.json, which deploy PRs change and the
+# bots merge (docs/setup.md). Order matters: the last matching line wins.
+*                              @bigbluebutton/plugin-directory-maintainers
+/plugins/*/release.json
+# Spelled out because a deploy PR must never change it.
+/plugins/*/maintainers.json    @bigbluebutton/plugin-directory-maintainers

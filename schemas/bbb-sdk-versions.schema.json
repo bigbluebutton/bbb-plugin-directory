@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bigbluebutton.org/schemas/plugin-directory/bbb-sdk-versions.schema.json",
+  "title": "BigBlueButton release to plugin SDK table (data/bbb-sdk-versions.json)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lines"],
+  "properties": {
+    "source": { "type": "string" },
+    "lines": {
+      "description": "Keyed by BigBlueButton main version (\"4.0\").",
+      "type": "object",
+      "propertyNames": { "pattern": "^[0-9]+\\.[0-9]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["supported", "minSupported", "releases"],
+        "properties": {
+          "supported": { "description": "Whether stable URLs are still updated for this line.", "type": "boolean" },
+          "minSupported": { "description": "Oldest release of the line a stable URL must keep working on. Edited by humans.", "type": "string" },
+          "releases": {
+            "description": "Release version to the plugin SDK version it ships.",
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
