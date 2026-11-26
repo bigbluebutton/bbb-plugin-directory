@@ -1,0 +1,58 @@
+name: Plugin request
+description: Ask for a plugin to become an official BigBlueButton plugin.
+title: "Plugin request: bbb-plugin-<id>"
+labels: [plugin-request]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Official plugins carry the BigBlueButton name, so every request is reviewed by the committee
+        against three criteria: security, duplication and narrow scope. See docs/admission.md and
+        docs/plugin-contract.md before opening the request.
+  - type: input
+    id: repository
+    attributes:
+      label: Repository
+      description: Public GitHub repository, named bbb-plugin-<id>.
+      placeholder: https://github.com/<owner>/bbb-plugin-<id>
+    validations:
+      required: true
+  - type: input
+    id: main-feature
+    attributes:
+      label: Main feature, in one sentence
+      description: One plugin, one main feature. Variations of it are fine.
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security
+      description: Network calls outside the BigBlueButton server, npm dependencies, use of meeting data, dynamic code, telemetry (and how to turn it off).
+    validations:
+      required: true
+  - type: textarea
+    id: duplication
+    attributes:
+      label: Existing plugins
+      description: Does an official plugin already do this, or part of it?
+    validations:
+      required: true
+  - type: input
+    id: maintainers
+    attributes:
+      label: Maintainers
+      description: GitHub logins allowed to publish versions.
+    validations:
+      required: true
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Plugin contract
+      options:
+        - label: The repository has package-lock.json and an npm run build-bundle script that works without network access and without install scripts.
+          required: true
+        - label: manifest.json uses paths relative to itself for javascriptEntrypointUrl and localesBaseUrl.
+          required: true
+        - label: Versions are published as semver tags.
+          required: true
