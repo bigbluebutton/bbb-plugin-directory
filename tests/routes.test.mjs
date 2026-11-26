@@ -13,6 +13,16 @@ test('with the real table, a plugin for SDK ^1.0.0-beta.2 goes to the 4.0 and SD
   ]);
 });
 
+test('with the real table, a 3.0 plugin built for SDK ~0.0.92 reaches the 3.0 and SDK 0.0 stable folders', () => {
+  // pick-random-user's 0.0.x tags declare ~0.0.92. Releases before 3.0.14 ship
+  // an older SDK (and 3.0.6 ships 0.1.2), so the 3.0 line starts at 3.0.14.
+  assert.equal(realTable.lines['3.0'].minSupported, '3.0.14');
+  assert.deepEqual(keys(stableTargets(realTable, 'pick-random-user', '0.0.10', '~0.0.92')), [
+    'bbb/3.0/pick-random-user/',
+    'sdk/0.0/pick-random-user/',
+  ]);
+});
+
 test('a range that leaves out an SDK still shipped in the line keeps the plugin off that line', () => {
   const table = {
     lines: {

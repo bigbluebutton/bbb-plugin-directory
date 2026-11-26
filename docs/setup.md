@@ -126,9 +126,12 @@ per line are edited by hand in the weekly PR or on their own:
 - `supported`: stable URLs of the line are only updated while it is `true`;
 - `minSupported`: the oldest release of the line a stable URL must keep
   working on. Raising it lets plugins that need a newer SDK reach the line's
-  stable URL. For example, 3.0.6 shipped SDK 0.1.2 while the rest of 3.0 ships
-  0.0.x, so with `minSupported` at `3.0.0` no 0.0.x plugin can reach
-  `bbb/3.0/`; setting it to `3.0.7` or later opens it.
+  stable URL; servers on older releases of the line keep the per-version and
+  per-SDK-line URLs. Each plugin also needs `minSupported` at a release whose
+  SDK satisfies its `requiredSdkVersion`: 3.0.6 shipped SDK 0.1.2 while the rest
+  of 3.0 ships 0.0.x, and pick-random-user's 0.0.x versions declare `~0.0.92`
+  (3.0.13 ships 0.0.90, 3.0.14 ships 0.0.94). That is why the 3.0 line is set
+  to `3.0.14` (see [design.md](design.md)).
 
 ## Trying it locally
 

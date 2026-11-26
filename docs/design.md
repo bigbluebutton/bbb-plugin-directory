@@ -13,6 +13,15 @@ the SDK of every release of that line from `minSupported` on, and to
 still shipped by a supported release. A stable folder only moves to a newer
 version. Pre-release plugin versions only get their fixed folder.
 
+**The 3.0 line starts at 3.0.14.** With `minSupported` at the first release of
+the line, `bbb/3.0/` would never receive a plugin: 3.0.6 shipped SDK 0.1.2
+between releases on 0.0.x, and no 0.0.x range accepts it. 3.0.14 is the first
+release whose SDK (0.0.94) satisfies `~0.0.92`, the range of pick-random-user's
+0.0.x versions, so that plugin reaches `bbb/3.0/`. Servers on 3.0.0 to 3.0.13
+use the per-version URL or `sdk/%%HTML5_PLUGIN_SDK_MAIN_VERSION%%/`, which
+follows their own SDK. The 4.0 line starts at 4.0.0 (every 4.0 release ships
+SDK 1.0.0-beta.3).
+
 **The BBB to SDK table is data, generated from the BigBlueButton tags.** For
 each release tag from 3.0 on it reads `html5PluginSdkVersion` from
 `bigbluebutton.properties` (the value the server checks plugins against),
