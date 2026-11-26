@@ -4,9 +4,9 @@
 
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, posix } from 'node:path';
-import { assertValidRange } from './semver.mjs';
-import { assertSchema } from './schemas.mjs';
-import { hashFiles, sha256 } from './files.mjs';
+import { assertValidRange } from './semver.js';
+import { assertSchema } from './schemas.js';
+import { hashFiles, sha256 } from './files.js';
 
 export const CONTRACT_FILE = 'contract.json';
 export const SUMS_FILE = 'SHA256SUMS';

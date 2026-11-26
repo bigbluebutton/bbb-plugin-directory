@@ -42,4 +42,4 @@ for _ in $(seq 1 60); do
   sleep 1
 done
 echo -e "S3 API on http://127.0.0.1:$PORT. Create the bucket and its CORS rule with:
-  source <($0 --env) && node src/cli/configure-bucket.mjs --create"
+  source <($0 --env) && node src/cli/configure-bucket.js --create"

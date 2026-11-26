@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   satisfies, compareVersions, normalizeVersion, sdkLineOf, mainVersionOf,
-} from '../src/lib/semver.mjs';
+} from '../src/lib/semver.js';
 
 const oracle = JSON.parse(readFileSync(new URL('./fixtures/semver-server-oracle.json', import.meta.url)));
 

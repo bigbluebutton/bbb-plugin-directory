@@ -2,9 +2,9 @@
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { schemaErrors } from './schemas.mjs';
-import { idFromRepository, isValidPluginId } from './plugin-ids.mjs';
-import { compareVersions, isValidVersion } from './semver.mjs';
+import { schemaErrors } from './schemas.js';
+import { idFromRepository, isValidPluginId } from './plugin-ids.js';
+import { compareVersions, isValidVersion } from './semver.js';
 
 export const PLUGIN_FILES = { plugin: 'plugin.json', release: 'release.json', maintainers: 'maintainers.json' };
 

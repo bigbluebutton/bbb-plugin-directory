@@ -2,17 +2,17 @@
 // Builds one plugin version and prepares the folder to publish. Holds no
 // credentials and must run in a job without any.
 //
-// Usage: node src/cli/build-plugin.mjs --plugin <id> --out <dir> [--release <release.json>] [--work <dir>]
+// Usage: node src/cli/build-plugin.js --plugin <id> --out <dir> [--release <release.json>] [--work <dir>]
 //   --release defaults to plugins/<id>/release.json (a PR's file is passed explicitly by the verify job).
 
 import { mkdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
-import { loadPlugin } from '../lib/repo.mjs';
-import { assertSchema } from '../lib/schemas.mjs';
-import { buildInContainer, fetchSource, sourceContractErrors } from '../lib/build.mjs';
-import { preparePublication } from '../lib/package.mjs';
-import { resolveVersionTag } from '../lib/tags.mjs';
+import { loadPlugin } from '../lib/repo.js';
+import { assertSchema } from '../lib/schemas.js';
+import { buildInContainer, fetchSource, sourceContractErrors } from '../lib/build.js';
+import { preparePublication } from '../lib/package.js';
+import { resolveVersionTag } from '../lib/tags.js';
 
 const { values } = parseArgs({
   options: {

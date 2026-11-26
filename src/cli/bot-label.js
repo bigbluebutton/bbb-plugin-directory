@@ -7,9 +7,9 @@
 // Environment: GH_TOKEN (GitHub App installation token), GITHUB_REPOSITORY, GITHUB_EVENT_PATH.
 
 import { readFileSync } from 'node:fs';
-import { GitHub } from '../lib/github.mjs';
-import { DEPLOY_LABEL, DEPLOY_TITLE_PREFIX } from '../lib/deploy-pr.mjs';
-import { evaluateDeployPr, reasonsMessage, upsertBotComment } from '../lib/deploy-evaluation.mjs';
+import { GitHub } from '../lib/github.js';
+import { DEPLOY_LABEL, DEPLOY_TITLE_PREFIX } from '../lib/deploy-pr.js';
+import { evaluateDeployPr, reasonsMessage, upsertBotComment } from '../lib/deploy-evaluation.js';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));

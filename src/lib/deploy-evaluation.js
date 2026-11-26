@@ -2,8 +2,8 @@
 // and applies them. Shared by bot 1 (labels) and bot 2 (merges), so bot 2
 // checks again everything bot 1 checked instead of trusting the label.
 
-import { checkDeployShape, checkReleaseChange } from './deploy-pr.mjs';
-import { parseJsonOrError } from './github.mjs';
+import { checkDeployShape, checkReleaseChange } from './deploy-pr.js';
+import { parseJsonOrError } from './github.js';
 
 const jsonOrNull = (text) => (text === null ? null : JSON.parse(text));
 

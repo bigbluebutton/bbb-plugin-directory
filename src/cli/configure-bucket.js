@@ -4,12 +4,12 @@
 // translations from another origin: GET/HEAD from any origin, since every
 // BigBlueButton server has its own.
 //
-// Usage: node src/cli/configure-bucket.mjs [--create]
-// Environment: the S3_* variables of src/lib/storage.mjs.
+// Usage: node src/cli/configure-bucket.js [--create]
+// Environment: the S3_* variables of src/lib/storage.js.
 
 import { parseArgs } from 'node:util';
 import { CreateBucketCommand, GetBucketCorsCommand, PutBucketCorsCommand } from '@aws-sdk/client-s3';
-import { Storage, storageConfigFromEnv } from '../lib/storage.mjs';
+import { Storage, storageConfigFromEnv } from '../lib/storage.js';
 
 export const CORS_RULES = [{ AllowedOrigins: ['*'], AllowedMethods: ['GET', 'HEAD'], AllowedHeaders: ['*'], MaxAgeSeconds: 3600 }];
 

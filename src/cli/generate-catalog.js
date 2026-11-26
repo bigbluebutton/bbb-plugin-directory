@@ -2,14 +2,14 @@
 // Generates catalog.json from the object storage and this repository, uploads
 // it next to the plugins and writes a local copy for the showcase.
 //
-// Usage: node src/cli/generate-catalog.mjs --out <catalog.json> [--root .] [--no-upload]
-// Environment: the S3_* variables of src/lib/storage.mjs and PUBLIC_BASE_URL.
+// Usage: node src/cli/generate-catalog.js --out <catalog.json> [--root .] [--no-upload]
+// Environment: the S3_* variables of src/lib/storage.js and PUBLIC_BASE_URL.
 
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseArgs } from 'node:util';
-import { buildCatalog } from '../lib/catalog.mjs';
-import { CACHE_SHORT, Storage, storageConfigFromEnv } from '../lib/storage.mjs';
+import { buildCatalog } from '../lib/catalog.js';
+import { CACHE_SHORT, Storage, storageConfigFromEnv } from '../lib/storage.js';
 
 const { values } = parseArgs({
   options: {

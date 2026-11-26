@@ -25,7 +25,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Clone BigBlueButton tags (no blobs until needed)
         run: git clone --quiet --filter=blob:none --no-checkout https://github.com/bigbluebutton/bigbluebutton.git "$RUNNER_TEMP/bbb"
-      - run: node src/cli/generate-sdk-table.mjs --bbb-repo "$RUNNER_TEMP/bbb"
+      - run: node src/cli/generate-sdk-table.js --bbb-repo "$RUNNER_TEMP/bbb"
       - name: Open or update the PR
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}

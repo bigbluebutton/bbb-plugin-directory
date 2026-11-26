@@ -5,7 +5,7 @@
 // BigBlueButton line from its `minSupported` release on, so a server that has
 // not upgraded inside a line keeps a working plugin behind the same URL.
 
-import { compareVersions, parseVersion, satisfies, sdkLineOf } from './semver.mjs';
+import { compareVersions, parseVersion, satisfies, sdkLineOf } from './semver.js';
 
 export const versionPrefix = (id, version) => `${id}/${version}/`;
 export const bbbPrefix = (line, id) => `bbb/${line}/${id}/`;

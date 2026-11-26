@@ -44,7 +44,7 @@ src/                            build, publishing, catalog, showcase and bots (N
 ```bash
 npm ci
 npm test                              # unit tests
-node src/cli/validate-repo.mjs        # validates the input files
+node src/cli/validate-repo.js        # validates the input files
 ```
 
 `scripts/local/storage-up.sh` starts a throwaway S3-compatible storage to try

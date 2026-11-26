@@ -1,4 +1,4 @@
-// In-memory stand-in for src/lib/storage.mjs, same interface.
+// In-memory stand-in for src/lib/storage.js, same interface.
 export class MemoryStorage {
   constructor() {
     this.objects = new Map();

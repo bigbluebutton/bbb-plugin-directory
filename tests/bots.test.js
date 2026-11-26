@@ -8,8 +8,8 @@ import { execFile, execFileSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { BOT_COMMENT_MARKER } from '../src/lib/deploy-evaluation.mjs';
-import { tempDir } from './helpers/fixtures.mjs';
+import { BOT_COMMENT_MARKER } from '../src/lib/deploy-evaluation.js';
+import { tempDir } from './helpers/fixtures.js';
 
 const run = promisify(execFile);
 const REPO = 'bigbluebutton/bbb-plugin-directory';
@@ -123,9 +123,9 @@ test('bot 1 labels a well-formed deploy request and bot 2 merges it at the check
   const { state } = scenario();
   const gh = await fakeGitHub(state);
   try {
-    await runBot('bot-label.mjs', gh.url, { action: 'opened', pull_request: { number: 7 } });
+    await runBot('bot-label.js', gh.url, { action: 'opened', pull_request: { number: 7 } });
     assert.deepEqual(state.labels, ['deploy']);
-    await runBot('bot-merge.mjs', gh.url, { action: 'labeled', pull_request: { number: 7 } });
+    await runBot('bot-merge.js', gh.url, { action: 'labeled', pull_request: { number: 7 } });
     assert.deepEqual(state.mergeRequest, { sha: HEAD_SHA, merge_method: 'squash', commit_title: 'deploy: pick-random-user 0.1.5 (#7)' });
     assert.ok(gh.calls.some((c) => c === `GET /repos/${REPO}/contents/plugins/pick-random-user/maintainers.json`));
   } finally {
@@ -138,12 +138,12 @@ test('bot 2 waits while the verification build runs, then merges when woken by i
   state.labels = ['deploy'];
   const gh = await fakeGitHub(state);
   try {
-    const waiting = await runBot('bot-merge.mjs', gh.url, { action: 'labeled', pull_request: { number: 7 } });
+    const waiting = await runBot('bot-merge.js', gh.url, { action: 'labeled', pull_request: { number: 7 } });
     assert.match(waiting.stdout, /waiting/);
     assert.equal(state.mergeRequest, undefined);
     assert.deepEqual(state.labels, ['deploy']);
     state.verifyBuild = { status: 'completed', conclusion: 'success' };
-    await runBot('bot-merge.mjs', gh.url, { workflow_run: { head_sha: HEAD_SHA } });
+    await runBot('bot-merge.js', gh.url, { workflow_run: { head_sha: HEAD_SHA } });
     assert.equal(state.mergeRequest.sha, HEAD_SHA);
   } finally {
     gh.server.close();
@@ -160,7 +160,7 @@ test('bot 2 refuses an author who is not a maintainer, a tag on another commit a
     state.labels = ['deploy'];
     const gh = await fakeGitHub(state);
     try {
-      await runBot('bot-merge.mjs', gh.url, { action: 'labeled', pull_request: { number: 7 } });
+      await runBot('bot-merge.js', gh.url, { action: 'labeled', pull_request: { number: 7 } });
       assert.equal(state.mergeRequest, undefined);
       assert.deepEqual(state.labels, []);
       assert.match(state.comments[0].body, reason);
@@ -177,11 +177,11 @@ test('bot 1 removes the label on a new commit and explains why the PR is not a d
   state.files.push({ filename: 'plugins/pick-random-user/maintainers.json', status: 'modified' });
   const gh = await fakeGitHub(state);
   try {
-    await runBot('bot-label.mjs', gh.url, { action: 'synchronize', pull_request: { number: 7 } });
+    await runBot('bot-label.js', gh.url, { action: 'synchronize', pull_request: { number: 7 } });
     assert.deepEqual(state.labels, []);
     assert.match(state.comments[0].body, /may not change a maintainers\.json/);
     // Bot 2 woken anyway (e.g. a stale event) does nothing without the label.
-    await runBot('bot-merge.mjs', gh.url, { action: 'labeled', pull_request: { number: 7 } });
+    await runBot('bot-merge.js', gh.url, { action: 'labeled', pull_request: { number: 7 } });
     assert.equal(state.mergeRequest, undefined);
   } finally {
     gh.server.close();

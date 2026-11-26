@@ -18,4 +18,4 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm test
       - name: Validate the directory input files
-        run: node src/cli/validate-repo.mjs
+        run: node src/cli/validate-repo.js

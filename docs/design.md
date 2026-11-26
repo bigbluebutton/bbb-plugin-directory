@@ -30,7 +30,7 @@ weekly workflow proposes updates as a PR; `supported` and `minSupported` are
 human decisions kept across regenerations.
 
 **Compatibility is decided exactly as the server decides it.**
-[`src/lib/semver.mjs`](../src/lib/semver.mjs) is a port of the server's range
+[`src/lib/semver.js`](../src/lib/semver.js) is a port of the server's range
 evaluator (`SemverRange.scala` in akka-bbb-apps). Its test runs a table of 392
 cases whose expected answers were produced by running the server's compiled
 class, and the line names follow `PluginUtils`

@@ -6,10 +6,10 @@
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { contentType, listFiles } from './files.mjs';
-import { CONTRACT_FILE, SUMS_FILE } from './package.mjs';
-import { CACHE_IMMUTABLE, CACHE_SHORT } from './storage.mjs';
-import { shouldReplace, stableTargets, versionPrefix } from './routes.mjs';
+import { contentType, listFiles } from './files.js';
+import { CONTRACT_FILE, SUMS_FILE } from './package.js';
+import { CACHE_IMMUTABLE, CACHE_SHORT } from './storage.js';
+import { shouldReplace, stableTargets, versionPrefix } from './routes.js';
 
 /**
  * Upload order inside a folder: assets first, then the manifest that points to

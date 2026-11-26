@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { preparePublication } from '../../src/lib/package.mjs';
+import { preparePublication } from '../../src/lib/package.js';
 
 export const COMMIT = '54df0eaae12dcd551bba3cfd2397a2b652be59e2';
 export const PLUGIN = {

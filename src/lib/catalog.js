@@ -3,12 +3,12 @@
 // what servers will actually download; the descriptive data and the security
 // marks come from this repository.
 
-import { CONTRACT_FILE } from './package.mjs';
-import { assertSchema } from './schemas.mjs';
-import { compareVersions } from './semver.mjs';
-import { listPluginIds, loadPlugin } from './repo.mjs';
-import { versionPrefix } from './routes.mjs';
-import { joinUrl } from './verify.mjs';
+import { CONTRACT_FILE } from './package.js';
+import { assertSchema } from './schemas.js';
+import { compareVersions } from './semver.js';
+import { listPluginIds, loadPlugin } from './repo.js';
+import { versionPrefix } from './routes.js';
+import { joinUrl } from './verify.js';
 
 async function stableRoutes(storage, kind, id, baseUrl) {
   const routes = [];

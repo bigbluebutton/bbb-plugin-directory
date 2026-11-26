@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkDeployShape, checkReleaseChange, checkMergeConditions } from '../src/lib/deploy-pr.mjs';
+import { checkDeployShape, checkReleaseChange, checkMergeConditions } from '../src/lib/deploy-pr.js';
 
 const COMMIT = 'a'.repeat(40);
 const release = (version, extra = {}) => ({ version, commit: COMMIT, ...extra });
@@ -29,7 +29,7 @@ test('the shape check rejects a wrong title, extra files, maintainers changes an
     files: [{ filename: 'plugins/pick-random-user/release.json', previous_filename: 'plugins/pick-random-user/maintainers.json', status: 'renamed' }],
   });
   assert.ok(renamed.reasons.some((r) => /maintainers/.test(r)));
-  assert.match(checkDeployShape({ title: 'deploy: x', files: [{ filename: 'src/lib/publish.mjs', status: 'modified' }] }).reasons[0], /must be plugins/);
+  assert.match(checkDeployShape({ title: 'deploy: x', files: [{ filename: 'src/lib/publish.js', status: 'modified' }] }).reasons[0], /must be plugins/);
   assert.match(checkDeployShape({ title: 'deploy: x', files: releaseFile('removed') }).reasons[0], /added or modified/);
   assert.match(checkDeployShape({ title: 'deploy: x', files: [] }).reasons[0], /exactly one/);
 });

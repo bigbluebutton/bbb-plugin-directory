@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
-import { repositoryErrors } from '../src/lib/repo.mjs';
-import { generateSdkTable } from '../src/lib/sdk-table.mjs';
-import { idFromRepository, isValidPluginId } from '../src/lib/plugin-ids.mjs';
-import { COMMIT, PLUGIN, repoRoot, tempDir } from './helpers/fixtures.mjs';
+import { repositoryErrors } from '../src/lib/repo.js';
+import { generateSdkTable } from '../src/lib/sdk-table.js';
+import { idFromRepository, isValidPluginId } from '../src/lib/plugin-ids.js';
+import { COMMIT, PLUGIN, repoRoot, tempDir } from './helpers/fixtures.js';
 
 test('this repository itself is valid', () => {
   assert.deepEqual(repositoryErrors(new URL('..', import.meta.url).pathname), []);

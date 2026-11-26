@@ -2,10 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { completeManifest } from '../src/lib/package.mjs';
-import { sha256 } from '../src/lib/files.mjs';
-import { schemaErrors } from '../src/lib/schemas.mjs';
-import { COMMIT, PLUGIN, fakeBuildOutput, prepared } from './helpers/fixtures.mjs';
+import { completeManifest } from '../src/lib/package.js';
+import { sha256 } from '../src/lib/files.js';
+import { schemaErrors } from '../src/lib/schemas.js';
+import { COMMIT, PLUGIN, fakeBuildOutput, prepared } from './helpers/fixtures.js';
 
 const release = { version: '0.1.4', commit: COMMIT };
 

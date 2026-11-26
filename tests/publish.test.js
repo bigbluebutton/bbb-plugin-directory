@@ -2,12 +2,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ImmutableVersionError, publishVersionFolder, updateStableFolders, uploadOrder } from '../src/lib/publish.mjs';
-import { buildCatalog } from '../src/lib/catalog.mjs';
-import { loadSdkTable } from '../src/lib/repo.mjs';
-import { schemaErrors } from '../src/lib/schemas.mjs';
-import { MemoryStorage } from './helpers/memory-storage.mjs';
-import { COMMIT, prepared, repoRoot } from './helpers/fixtures.mjs';
+import { ImmutableVersionError, publishVersionFolder, updateStableFolders, uploadOrder } from '../src/lib/publish.js';
+import { buildCatalog } from '../src/lib/catalog.js';
+import { loadSdkTable } from '../src/lib/repo.js';
+import { schemaErrors } from '../src/lib/schemas.js';
+import { MemoryStorage } from './helpers/memory-storage.js';
+import { COMMIT, prepared, repoRoot } from './helpers/fixtures.js';
 
 const BASE = 'https://plugins.example.org';
 

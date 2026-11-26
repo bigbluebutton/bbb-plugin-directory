@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { tagCandidates } from './deploy-pr.mjs';
+import { tagCandidates } from './deploy-pr.js';
 
 /** Parses `git ls-remote --tags` output into { tagName: peeledCommit }. */
 export function parseLsRemoteTags(output) {

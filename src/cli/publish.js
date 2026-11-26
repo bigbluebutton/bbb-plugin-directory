@@ -1,22 +1,22 @@
 #!/usr/bin/env node
-// Publishes a folder prepared by build-plugin.mjs, moves the stable folders and
+// Publishes a folder prepared by build-plugin.js, moves the stable folders and
 // checks everything over public HTTPS. The only step that holds the storage key.
 //
-// Usage: node src/cli/publish.mjs --dir <prepared folder> [--root .] [--report report.json]
-// Environment: the S3_* variables of src/lib/storage.mjs and PUBLIC_BASE_URL
+// Usage: node src/cli/publish.js --dir <prepared folder> [--root .] [--report report.json]
+// Environment: the S3_* variables of src/lib/storage.js and PUBLIC_BASE_URL
 // (the public HTTPS address of the storage prefix, e.g. https://plugins.example.org).
 
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { isDeepStrictEqual, parseArgs } from 'node:util';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { assertSchema } from '../lib/schemas.mjs';
-import { hashFiles } from '../lib/files.mjs';
-import { CONTRACT_FILE, SUMS_FILE } from '../lib/package.mjs';
-import { loadSdkTable } from '../lib/repo.mjs';
-import { Storage, storageConfigFromEnv } from '../lib/storage.mjs';
-import { publishVersionFolder, replaceStableFolder, updateStableFolders } from '../lib/publish.mjs';
-import { verifyFolder } from '../lib/verify.mjs';
+import { assertSchema } from '../lib/schemas.js';
+import { hashFiles } from '../lib/files.js';
+import { CONTRACT_FILE, SUMS_FILE } from '../lib/package.js';
+import { loadSdkTable } from '../lib/repo.js';
+import { Storage, storageConfigFromEnv } from '../lib/storage.js';
+import { publishVersionFolder, replaceStableFolder, updateStableFolders } from '../lib/publish.js';
+import { verifyFolder } from '../lib/verify.js';
 
 const { values } = parseArgs({
   options: {

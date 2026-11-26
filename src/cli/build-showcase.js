@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Usage: node src/cli/build-showcase.mjs --catalog <catalog.json> --out <site dir>
+// Usage: node src/cli/build-showcase.js --catalog <catalog.json> --out <site dir>
 import { readFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
-import { assertSchema } from '../lib/schemas.mjs';
-import { buildShowcase } from '../lib/showcase.mjs';
+import { assertSchema } from '../lib/schemas.js';
+import { buildShowcase } from '../lib/showcase.js';
 
 const { values } = parseArgs({ options: { catalog: { type: 'string' }, out: { type: 'string' } } });
 if (!values.catalog || !values.out) {

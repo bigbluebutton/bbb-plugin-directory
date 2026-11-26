@@ -10,10 +10,10 @@
 // DEFAULT_BRANCH (default main).
 
 import { readFileSync } from 'node:fs';
-import { GitHub } from '../lib/github.mjs';
-import { DEPLOY_LABEL, checkMergeConditions } from '../lib/deploy-pr.mjs';
-import { evaluateDeployPr, reasonsMessage, upsertBotComment } from '../lib/deploy-evaluation.mjs';
-import { resolveVersionTag } from '../lib/tags.mjs';
+import { GitHub } from '../lib/github.js';
+import { DEPLOY_LABEL, checkMergeConditions } from '../lib/deploy-pr.js';
+import { evaluateDeployPr, reasonsMessage, upsertBotComment } from '../lib/deploy-evaluation.js';
+import { resolveVersionTag } from '../lib/tags.js';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const checkName = process.env.VERIFY_CHECK_NAME || 'verify-build';

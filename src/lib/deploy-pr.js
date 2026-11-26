@@ -4,8 +4,8 @@
 // GitHub API and never check out or run anything from the PR.
 
 import { isDeepStrictEqual } from 'node:util';
-import { schemaErrors } from './schemas.mjs';
-import { compareVersions } from './semver.mjs';
+import { schemaErrors } from './schemas.js';
+import { compareVersions } from './semver.js';
 
 export const DEPLOY_TITLE_PREFIX = 'deploy:';
 export const DEPLOY_LABEL = 'deploy';

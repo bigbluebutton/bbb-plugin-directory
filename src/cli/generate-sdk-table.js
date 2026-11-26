@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Usage: node src/cli/generate-sdk-table.mjs --bbb-repo <path to a bigbluebutton clone with tags> [--out data/bbb-sdk-versions.json]
+// Usage: node src/cli/generate-sdk-table.js --bbb-repo <path to a bigbluebutton clone with tags> [--out data/bbb-sdk-versions.json]
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { parseArgs } from 'node:util';
-import { generateSdkTable } from '../lib/sdk-table.mjs';
+import { generateSdkTable } from '../lib/sdk-table.js';
 
 const { values } = parseArgs({
   options: {

@@ -38,5 +38,5 @@ You can reproduce the build of a version locally with the same script the CI
 runs (Docker and git required):
 
 ```bash
-node src/cli/build-plugin.mjs --plugin <id> --out out/publication
+node src/cli/build-plugin.js --plugin <id> --out out/publication
 ```

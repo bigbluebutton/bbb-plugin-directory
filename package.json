@@ -8,8 +8,8 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node --test 'tests/**/*.test.mjs'",
-    "validate": "node src/cli/validate-repo.mjs"
+    "test": "node --test 'tests/**/*.test.js'",
+    "validate": "node src/cli/validate-repo.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.937.0",

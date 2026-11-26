@@ -29,6 +29,6 @@ jobs:
         with:
           app-id: ${{ vars.DIRECTORY_APP_ID }}
           private-key: ${{ secrets.DIRECTORY_APP_PRIVATE_KEY }}
-      - run: node src/cli/bot-label.mjs
+      - run: node src/cli/bot-label.js
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}

@@ -36,7 +36,7 @@ jobs:
           fi
           echo "id=$(echo "$changed" | cut -d/ -f2)" >> "$GITHUB_OUTPUT"
       - name: Build at the commit, without credentials
-        run: node src/cli/build-plugin.mjs --plugin "${{ steps.plugin.outputs.id }}" --out out/publication --work work
+        run: node src/cli/build-plugin.js --plugin "${{ steps.plugin.outputs.id }}" --out out/publication --work work
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: verify-build-${{ steps.plugin.outputs.id }}

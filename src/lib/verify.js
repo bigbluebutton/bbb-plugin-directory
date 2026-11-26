@@ -2,7 +2,7 @@
 // way a BigBlueButton server and a browser will, and compares them with the
 // contract of the version that was just published.
 
-import { sha256 } from './files.mjs';
+import { sha256 } from './files.js';
 
 // Any origin works for the CORS check: every BigBlueButton server has its own.
 const CHECK_ORIGIN = 'https://bbb.example.org';

@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateDeployPr, upsertBotComment, BOT_COMMENT_MARKER } from '../src/lib/deploy-evaluation.mjs';
-import { parseLsRemoteTags } from '../src/lib/tags.mjs';
-import { COMMIT, PLUGIN } from './helpers/fixtures.mjs';
+import { evaluateDeployPr, upsertBotComment, BOT_COMMENT_MARKER } from '../src/lib/deploy-evaluation.js';
+import { parseLsRemoteTags } from '../src/lib/tags.js';
+import { COMMIT, PLUGIN } from './helpers/fixtures.js';
 
 // Fake GitHub: files keyed by "repo@ref:path".
 function fakeGitHub({ files, prFiles }) {

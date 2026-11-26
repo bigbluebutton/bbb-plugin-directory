@@ -58,7 +58,7 @@ means changing the variables below.
 
   ```bash
   S3_ENDPOINT=... S3_BUCKET=... S3_ACCESS_KEY_ID=... S3_SECRET_ACCESS_KEY=... \
-    node src/cli/configure-bucket.mjs
+    node src/cli/configure-bucket.js
   ```
 
 - A key restricted to that bucket. If the provider can deny deleting and
@@ -139,12 +139,12 @@ per line are edited by hand in the weekly PR or on their own:
 npm ci
 scripts/local/storage-up.sh                          # S3-compatible storage on 127.0.0.1:8333
 source <(scripts/local/storage-up.sh --env)
-node src/cli/configure-bucket.mjs --create
+node src/cli/configure-bucket.js --create
 # plugins/<id>/ must exist (plugin.json, maintainers.json, release.json)
-node src/cli/build-plugin.mjs --plugin <id> --out out/publication
-PUBLIC_BASE_URL=http://127.0.0.1:8333/plugins node src/cli/publish.mjs --dir out/publication
-PUBLIC_BASE_URL=http://127.0.0.1:8333/plugins node src/cli/generate-catalog.mjs --out out/catalog.json
-node src/cli/build-showcase.mjs --catalog out/catalog.json --out out/site
+node src/cli/build-plugin.js --plugin <id> --out out/publication
+PUBLIC_BASE_URL=http://127.0.0.1:8333/plugins node src/cli/publish.js --dir out/publication
+PUBLIC_BASE_URL=http://127.0.0.1:8333/plugins node src/cli/generate-catalog.js --out out/catalog.json
+node src/cli/build-showcase.js --catalog out/catalog.json --out out/site
 scripts/local/storage-up.sh --down
 ```
 

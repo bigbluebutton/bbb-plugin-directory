@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { buildShowcase } from '../src/lib/showcase.mjs';
-import { tempDir } from './helpers/fixtures.mjs';
+import { buildShowcase } from '../src/lib/showcase.js';
+import { tempDir } from './helpers/fixtures.js';
 
 const catalog = {
   schemaVersion: 1,

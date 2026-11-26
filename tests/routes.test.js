@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { stableTargets, shouldReplace, sdkVersionsInUse } from '../src/lib/routes.mjs';
+import { stableTargets, shouldReplace, sdkVersionsInUse } from '../src/lib/routes.js';
 
 const realTable = JSON.parse(readFileSync(new URL('../data/bbb-sdk-versions.json', import.meta.url)));
 const keys = (targets) => targets.map((t) => t.prefix);
