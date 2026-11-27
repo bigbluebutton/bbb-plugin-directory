@@ -1,6 +1,5 @@
 // Gathers, through the GitHub API only, what the deploy rules need about a PR
-// and applies them. Shared by bot 1 (labels) and bot 2 (merges), so bot 2
-// checks again everything bot 1 checked instead of trusting the label.
+// and applies them.
 
 import { checkDeployShape, checkReleaseChange } from './deploy-pr.js';
 import { parseJsonOrError } from './github.js';
