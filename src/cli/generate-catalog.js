@@ -5,8 +5,8 @@
 // Usage: node src/cli/generate-catalog.js --out <catalog.json> [--root .] [--no-upload]
 // Environment: the S3_* variables of src/lib/storage.js and PUBLIC_BASE_URL.
 
-import { writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { buildCatalog } from '../lib/catalog.js';
 import { CACHE_SHORT, Storage, storageConfigFromEnv } from '../lib/storage.js';
@@ -26,6 +26,7 @@ if (!values.out || !baseUrl) {
 const storage = new Storage(storageConfigFromEnv());
 const catalog = await buildCatalog({ storage, root: resolve(values.root), baseUrl });
 const body = `${JSON.stringify(catalog, null, 2)}\n`;
+mkdirSync(dirname(resolve(values.out)), { recursive: true });
 writeFileSync(values.out, body);
 if (!values['no-upload']) {
   await storage.put('catalog.json', body, { contentType: 'application/json', cacheControl: CACHE_SHORT });
