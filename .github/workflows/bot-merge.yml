@@ -1,0 +1,35 @@
+# Bot 2: merges deploy requests without human review once every check passes.
+# Woken by the deploy label (applied by bot 1) and by the end of a
+# verification build. Reads data only; never checks out or runs PR code.
+name: Bot - merge deploy requests
+on:
+  pull_request_target:
+    types: [labeled]
+  workflow_run:
+    workflows: [Verify build]
+    types: [completed]
+permissions: {}
+jobs:
+  merge:
+    if: github.event_name == 'workflow_run' || github.event.label.name == 'deploy'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci --ignore-scripts
+      # The merge must come from the GitHub App so it triggers the publish workflow.
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
+        id: app-token
+        with:
+          app-id: ${{ vars.DIRECTORY_APP_ID }}
+          private-key: ${{ secrets.DIRECTORY_APP_PRIVATE_KEY }}
+      - run: node src/cli/bot-merge.js
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}

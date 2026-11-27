@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bigbluebutton.org/schemas/plugin-directory/contract.schema.json",
+  "title": "Version contract (<id>/<version>/contract.json on the object storage)",
+  "description": "Provenance of one published version, written by the directory CI next to the files it describes.",
+  "type": "object",
+  "required": ["schemaVersion", "plugin", "name", "version", "repository", "commit", "tag", "requiredSdkVersion", "manifest", "manifestSha256", "bundle", "bundleSha256", "files", "build"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "plugin": { "type": "string" },
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "repository": { "type": "string" },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "tag": { "type": "string" },
+    "requiredSdkVersion": { "type": "string" },
+    "manifest": { "const": "manifest.json" },
+    "manifestSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "bundle": { "type": "string" },
+    "bundleSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "files": {
+      "description": "Every published file except contract.json and SHA256SUMS, relative path to sha256.",
+      "type": "object",
+      "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+    },
+    "build": {
+      "type": "object",
+      "properties": {
+        "nodeImage": { "type": "string" },
+        "allowNetwork": { "type": "boolean" },
+        "allowInstallScripts": { "type": "boolean" },
+        "directoryCommit": { "type": ["string", "null"] },
+        "workflowRunUrl": { "type": ["string", "null"] },
+        "builtAt": { "type": "string" }
+      }
+    }
+  }
+}

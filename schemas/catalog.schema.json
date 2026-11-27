@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bigbluebutton.org/schemas/plugin-directory/catalog.schema.json",
+  "title": "Plugin directory catalog (catalog.json on the object storage)",
+  "description": "Generated only by the directory CI. Integrations may rely on this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "baseUrl", "plugins"],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "route": {
+      "type": "object",
+      "required": ["version", "manifestUrl"],
+      "properties": { "version": { "type": "string" }, "manifestUrl": { "type": "string" } }
+    }
+  },
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatedAt": { "type": "string" },
+    "baseUrl": { "type": "string" },
+    "plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "repository", "description", "status", "maintainers", "versions", "perBbbVersion", "perSdkLine"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "repository": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string" },
+          "maintainers": { "type": "array", "items": { "type": "string" } },
+          "versions": {
+            "description": "Every published version, newest first. Immutable except for the security status.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["version", "commit", "tag", "requiredSdkVersion", "manifestUrl", "contractUrl", "manifestSha256", "bundleSha256", "security"],
+              "properties": {
+                "version": { "type": "string" },
+                "commit": { "type": "string" },
+                "tag": { "type": "string" },
+                "requiredSdkVersion": { "type": "string" },
+                "manifestUrl": { "type": "string" },
+                "contractUrl": { "type": "string" },
+                "manifestSha256": { "$ref": "#/$defs/sha256" },
+                "bundleSha256": { "$ref": "#/$defs/sha256" },
+                "security": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["vulnerable", "fixedIn"],
+                  "properties": {
+                    "vulnerable": { "type": "boolean" },
+                    "fixedIn": { "type": ["string", "null"] },
+                    "advisory": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "perBbbVersion": {
+            "type": "array",
+            "items": { "allOf": [{ "$ref": "#/$defs/route" }], "type": "object", "required": ["bbb"], "properties": { "bbb": { "type": "string" } }, "unevaluatedProperties": false }
+          },
+          "perSdkLine": {
+            "type": "array",
+            "items": { "allOf": [{ "$ref": "#/$defs/route" }], "type": "object", "required": ["sdk"], "properties": { "sdk": { "type": "string" } }, "unevaluatedProperties": false }
+          }
+        }
+      }
+    }
+  }
+}

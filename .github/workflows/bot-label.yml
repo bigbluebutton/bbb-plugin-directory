@@ -1,0 +1,34 @@
+# Bot 1: labels well-formed deploy requests. Runs on pull_request_target with
+# the BASE branch checked out and only reads the PR through the API; nothing
+# from the PR is checked out or run here.
+name: Bot - label deploy requests
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+permissions: {}
+concurrency:
+  group: bot-label-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  label:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci --ignore-scripts
+      # Events created with the default token do not trigger other workflows:
+      # the label must come from the GitHub App so it wakes bot 2.
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
+        id: app-token
+        with:
+          app-id: ${{ vars.DIRECTORY_APP_ID }}
+          private-key: ${{ secrets.DIRECTORY_APP_PRIVATE_KEY }}
+      - run: node src/cli/bot-label.js
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}

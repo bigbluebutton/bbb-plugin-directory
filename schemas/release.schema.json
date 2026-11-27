@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bigbluebutton.org/schemas/plugin-directory/release.schema.json",
+  "title": "Release request (plugins/<id>/release.json)",
+  "description": "The version to publish. The only file a deploy PR may change.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "commit"],
+  "properties": {
+    "version": {
+      "description": "Semver version, without the `v`. The plugin repository must have the tag `v<version>` or `<version>` pointing to `commit`.",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "commit": { "description": "Full commit hash the version is built from.", "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "security": {
+      "description": "Published versions marked as vulnerable. Entries are only ever added by a deploy PR; editing or removing one needs human review.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version"],
+        "properties": {
+          "version": { "type": "string" },
+          "fixedIn": { "type": ["string", "null"] },
+          "advisory": { "type": "string", "format": "uri" }
+        }
+      }
+    }
+  }
+}

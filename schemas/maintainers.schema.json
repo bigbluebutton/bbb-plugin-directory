@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bigbluebutton.org/schemas/plugin-directory/maintainers.schema.json",
+  "title": "Plugin maintainers (plugins/<id>/maintainers.json)",
+  "description": "GitHub logins allowed to publish versions of the plugin. Protected by CODEOWNERS; a deploy PR may not change it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["maintainers"],
+  "properties": {
+    "maintainers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$" }
+    }
+  }
+}
