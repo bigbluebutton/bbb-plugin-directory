@@ -1,0 +1,6 @@
+{
+  "name": "BbbPluginPickRandomUser",
+  "repository": "https://github.com/bigbluebutton/bbb-plugin-pick-random-user",
+  "description": "Picks a random user from the meeting.",
+  "status": "production"
+}
