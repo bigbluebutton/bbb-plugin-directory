@@ -54,7 +54,7 @@ test('security entries can be added by a deploy PR but never changed or removed'
   assert.match(checkReleaseChange({ base, headRelease: future }).reasons[0], /older/);
 });
 
-test('bot 2 needs a listed author, a tag on the commit and a green verification build', () => {
+test('the bot needs a listed author, a tag on the commit and a green verification build', () => {
   const ok = { author: 'Alice', maintainers: { maintainers: ['alice'] }, tag: { name: 'v0.1.5', pointsToCommit: true }, verifyBuild: 'success' };
   assert.deepEqual(checkMergeConditions(ok).reasons, []);
   assert.match(checkMergeConditions({ ...ok, author: 'mallory' }).reasons[0], /not listed/);

@@ -1,52 +1,34 @@
 # Setting up and operating the directory
 
-Everything below needs an administrator of the `bigbluebutton` organization
-and of this repository. Nothing here is created by the code: until it is in
-place, the workflows fail at the step that needs it.
+Most of this is repository Actions secrets and variables. Two steps need a
+repository administrator once: the branch ruleset and GitHub Pages. Nothing
+here is created by the code: until it is in place, the workflows fail at the
+step that needs it.
 
-## 1. GitHub App (the bots' identity)
-
-Events created with the workflows' default token do not trigger other
-workflows, so the label applied by bot 1 would not wake bot 2 and the merge by
-bot 2 would not start the publication. The bots therefore act as a GitHub App.
-
-Create an App owned by the organization and install it on this repository only:
-
-| Repository permission | Access | Used for |
-|---|---|---|
-| Contents | Read and write | merging deploy PRs; pushing the `bot/bbb-sdk-table` branch |
-| Pull requests | Read and write | reading PRs and their files, merging, opening the table PR |
-| Issues | Read and write | the `deploy` label and the bot comment |
-| Checks | Read | the result of the `verify-build` check |
-| Metadata | Read | mandatory |
-
-No webhook and no user permissions. Then, in this repository:
-
-- variable `DIRECTORY_APP_ID`: the App ID;
-- secret `DIRECTORY_APP_PRIVATE_KEY`: a private key of the App.
-
-## 2. Team, label and branch ruleset
+## 1. Team and branch ruleset (administrator)
 
 - Create the team `@bigbluebutton/plugin-directory-maintainers` with write
   access. It is the code owner of everything except `plugins/*/release.json`
   ([`.github/CODEOWNERS`](../.github/CODEOWNERS)). To use another team, edit
   CODEOWNERS (the CI checks its shape).
-- Create the label `deploy`. Only bot 1 applies it (external maintainers cannot
-  apply labels anyway).
 - Ruleset on `main`:
   - require a pull request, with **0 required approvals** and **Require review
     from Code Owners**: a deploy PR only touches an unowned file and needs no
     approval, while any other change needs a directory maintainer's review;
   - require the status check `test` (workflow CI). Do **not** require
-    `verify-build`: it only runs on PRs that change a `release.json`, and
-    bot 2 already checks it;
+    `verify-build`: it only runs on PRs that change a `release.json`, and the
+    deploy bot already checks it;
   - block force pushes and deletion.
-- Actions settings: workflow permissions read-only by default. With the default
-  "require approval for first-time contributors", the verification build of an
-  external maintainer's first PR waits until a maintainer approves the run
-  (the bots are not affected).
+- With the default "require approval for first-time contributors", the
+  verification build of an external maintainer's first PR waits until a
+  maintainer approves the run.
 
-## 3. Object storage
+The deploy bot merges and dispatches Publish with the workflow's own
+`GITHUB_TOKEN`, so no GitHub App or extra credential is needed. Its job asks for
+write permissions explicitly; an organization policy that caps `GITHUB_TOKEN`
+at read-only would block the merge.
+
+## 2. Object storage
 
 Any S3-compatible storage that serves HTTPS and CORS works; switching providers
 means changing the variables below.
@@ -67,7 +49,8 @@ means changing the variables below.
   bucket, without per-prefix rules), the CI enforces it: it refuses to write
   into a version folder that already has any file.
 
-Create the environment `publish` (deployment branches: `main` only) holding:
+Then add, as repository Actions secrets and variables (Settings > Secrets and
+variables > Actions):
 
 | Name | Kind | Example |
 |---|---|---|
@@ -82,31 +65,34 @@ Create the environment `publish` (deployment branches: `main` only) holding:
 | `S3_SECRET_ACCESS_KEY` | secret | |
 
 Only the `publish` and `catalog` jobs of [publish.yml](../.github/workflows/publish.yml)
-use this environment. The job that runs a plugin's build never sees the key: it
-hands the built files over as an artifact, and the publish job checks them
-against their `contract.json` before uploading.
+use the key. The job that runs a plugin's build never sees it: it hands the
+built files over as an artifact, and the publish job checks them against their
+`contract.json` before uploading. Pull requests from forks never receive
+secrets; anyone with write access to the repository could, by pushing a
+workflow to a branch, so keep that group small.
 
-## 4. GitHub Pages
+## 3. GitHub Pages (administrator)
 
 Settings > Pages > Source: **GitHub Actions**. The `pages` job of the publish
 workflow deploys the showcase after each catalog regeneration. A custom domain
 is set there too.
 
-## 5. Running it
+## 4. Running it
 
 | Workflow | When | What |
 |---|---|---|
 | CI | every PR and push | unit tests, validation of the input files |
 | Verify build | PRs changing a `release.json` | build without credentials; check `verify-build` |
-| Bot - label deploy requests | PR opened/updated (`pull_request_target`) | bot 1 |
-| Bot - merge deploy requests | `deploy` label, end of a verification build | bot 2 |
-| Publish | push to `main` under `plugins/` or `data/`; daily; by hand | build, publish, post-deploy check, catalog, showcase |
-| Update the BBB to SDK table | weekly; by hand | opens a PR when BigBlueButton released a version |
+| Bot - merge deploy requests | end of a verification build or of CI | the deploy bot: checks, merges, dispatches Publish |
+| Publish | dispatched by the bot with `plugin`; push to `main` under `plugins/` or `data/`; daily; by hand | build, publish, post-deploy check, catalog, showcase |
 
-The bots run on `pull_request_target` / `workflow_run` with the base branch
-checked out and only read data from the PR (changed files, `release.json`,
-the remote tag). Nothing from a PR is checked out or run with a token that can
-write.
+The bot runs on `workflow_run` with the base branch checked out and only reads
+data from the PR (changed files, `release.json`, the remote tag). Nothing from a
+PR is checked out or run with a token that can write.
+
+**When the bot merged a deploy PR but its run is red at the dispatch step,**
+nothing was published: run the Publish workflow by hand with `plugin=<id>`.
+The daily run does not publish missed versions, it only regenerates the catalog.
 
 **When the post-deploy check fails** the Publish run fails and its summary says
 which address is wrong. A stable folder is copied again automatically once; a
@@ -121,7 +107,15 @@ repairs a catalog left behind by two publications finishing out of order.
 
 `data/bbb-sdk-versions.json` maps each BigBlueButton release to the plugin SDK
 version its server checks plugins against (`html5PluginSdkVersion`). Two fields
-per line are edited by hand in the weekly PR or on their own:
+per line are edited by hand. Nothing announces a new BigBlueButton release:
+when one comes out, regenerate the table and open a PR with the result:
+
+```bash
+git clone --filter=blob:none --no-checkout https://github.com/bigbluebutton/bigbluebutton.git /tmp/bbb
+node src/cli/generate-sdk-table.js --bbb-repo /tmp/bbb
+```
+
+The hand-edited fields, kept across regenerations:
 
 - `supported`: stable URLs of the line are only updated while it is `true`;
 - `minSupported`: the oldest release of the line a stable URL must keep

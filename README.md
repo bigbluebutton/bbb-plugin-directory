@@ -35,8 +35,8 @@ plugins/<id>/maintainers.json   who may publish versions (code owners only)
 plugins/<id>/release.json       the version to publish (the only file a deploy PR changes)
 data/bbb-sdk-versions.json      BigBlueButton release -> plugin SDK table
 schemas/                        JSON Schemas of every file above and of what is published
-src/                            build, publishing, catalog, showcase and bots (Node.js 24, no framework)
-.github/workflows/              CI, verification build, bots, publishing, table update
+src/                            build, publishing, catalog, showcase and the deploy bot (Node.js 24, no framework)
+.github/workflows/              CI, verification build, deploy bot, publishing
 ```
 
 ## Development

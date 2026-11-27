@@ -1,6 +1,6 @@
 # Verification build of a deploy request. Runs on pull_request, so on PRs from
 # forks it gets a read-only token and no secrets; the plugin code only runs in
-# a throwaway container. Bot 2 merges only after the `verify-build` check of
+# a throwaway container. The deploy bot merges only after the `verify-build` check of
 # the PR head passed.
 name: Verify build
 on:

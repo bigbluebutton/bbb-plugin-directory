@@ -8,7 +8,6 @@ import { schemaErrors } from './schemas.js';
 import { compareVersions } from './semver.js';
 
 export const DEPLOY_TITLE_PREFIX = 'deploy:';
-export const DEPLOY_LABEL = 'deploy';
 const RELEASE_FILE_PATTERN = /^plugins\/([a-z0-9]+(?:-[a-z0-9]+)*)\/release\.json$/;
 
 /** Checks only the PR's title and changed files. Returns { pluginId, reasons }. */
@@ -66,7 +65,7 @@ export function tagCandidates(version) {
   return [`v${version}`, version];
 }
 
-/** Checks bot 2 adds on top of bot 1. */
+/** Checks the bot adds on top of the PR's shape and content. */
 export function checkMergeConditions({ author, maintainers, tag, verifyBuild }) {
   const reasons = [];
   if (!maintainers?.maintainers?.some((login) => login.toLowerCase() === author.toLowerCase())) {

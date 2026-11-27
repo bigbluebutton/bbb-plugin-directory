@@ -1,8 +1,9 @@
-# Deploy on merge: build the requested version at its exact commit in a job
-# without credentials, publish it from a separate job that only receives the
-# built files, check it over HTTPS, then regenerate catalog.json and the
-# showcase. Also regenerates the catalog when other directory data changes,
-# on a daily schedule (self-healing) and by hand.
+# Deploy: build the requested version at its exact commit in a job without
+# credentials, publish it from a separate job that only receives the built
+# files, check it over HTTPS, then regenerate catalog.json and the showcase.
+# The deploy bot dispatches it with `plugin` after merging; a human merge
+# triggers it by push. Also regenerates the catalog when other directory data
+# changes, on a daily schedule (self-healing) and by hand.
 name: Publish
 on:
   push:
@@ -13,6 +14,10 @@ on:
   schedule:
     - cron: '17 4 * * *'
   workflow_dispatch:
+    inputs:
+      plugin:
+        description: Plugin id to publish (its release.json on main); empty to only regenerate the catalog
+        required: false
 permissions:
   contents: read
 jobs:
@@ -32,7 +37,14 @@ jobs:
           EVENT: ${{ github.event_name }}
           # True when the push created the branch: there is no previous commit to diff against.
           CREATED: ${{ github.event.created }}
+          PLUGIN: ${{ inputs.plugin }}
         run: |
+          if [ -n "$PLUGIN" ]; then
+            if ! [[ "$PLUGIN" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || [ ! -f "plugins/$PLUGIN/release.json" ]; then
+              echo "::error::No plugin with id '$PLUGIN' and a release.json"; exit 1
+            fi
+            echo "plugins=$(jq -nc --arg p "$PLUGIN" '[$p]')" >> "$GITHUB_OUTPUT"; exit 0
+          fi
           if [ "$EVENT" != push ] || [ "$CREATED" = true ]; then
             echo 'plugins=[]' >> "$GITHUB_OUTPUT"; exit 0
           fi
@@ -73,7 +85,6 @@ jobs:
         plugin: ${{ fromJSON(needs.detect.outputs.plugins) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    environment: publish
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -105,7 +116,6 @@ jobs:
     if: ${{ !cancelled() && needs.detect.result == 'success' && needs.publish.result != 'failure' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    environment: publish
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
